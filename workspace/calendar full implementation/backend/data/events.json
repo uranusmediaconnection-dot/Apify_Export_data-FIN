@@ -1,0 +1,47 @@
+[
+  {
+    "id": "1",
+    "title": "Team Meeting",
+    "description": "Weekly sync with the team",
+    "start": "2026-01-15T10:00:00",
+    "end": "2026-01-15T11:00:00",
+    "color": "#8B5CF6",
+    "calendar": "work"
+  },
+  {
+    "id": "2",
+    "title": "Lunch with Sarah",
+    "description": "Catch up at downtown cafe",
+    "start": "2026-01-15T12:30:00",
+    "end": "2026-01-15T13:30:00",
+    "color": "#EC4899",
+    "calendar": "personal"
+  },
+  {
+    "id": "3",
+    "title": "Project Deadline",
+    "description": "Submit final deliverables",
+    "start": "2026-01-20T17:00:00",
+    "end": "2026-01-20T18:00:00",
+    "color": "#EF4444",
+    "calendar": "work"
+  },
+  {
+    "id": "4",
+    "title": "Yoga Class",
+    "description": "Morning yoga session",
+    "start": "2026-01-16T07:00:00",
+    "end": "2026-01-16T08:00:00",
+    "color": "#10B981",
+    "calendar": "health"
+  },
+  {
+    "id": "5",
+    "title": "Code Review",
+    "description": "Review PRs for the new feature",
+    "start": "2026-01-17T14:00:00",
+    "end": "2026-01-17T15:00:00",
+    "color": "#3B82F6",
+    "calendar": "work"
+  }
+]

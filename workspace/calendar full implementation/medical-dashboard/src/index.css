@@ -1,0 +1,104 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --google-blue: #1a73e8;
+    --google-gray: #70757a;
+    --google-dark: #3c4043;
+    --google-border: #dadce0;
+    --google-bg: #ffffff;
+    --google-hover: #f1f3f4;
+    
+    --duration-exit: 150ms;
+    --duration-enter: 210ms;
+    --duration-move: 400ms;
+  }
+
+  body {
+    @apply font-sans text-[#3c4043] bg-white;
+  }
+
+  .dark body {
+    @apply bg-[#202124] text-[#e8eaed];
+  }
+}
+
+/* Google Calendar Style Utils */
+@layer components {
+  .btn-google {
+    @apply flex items-center justify-center rounded-full transition-all duration-200 active:scale-95;
+  }
+  
+  .btn-google-pill {
+    @apply px-6 py-3 bg-white dark:bg-[#3c4043] border border-gray-200 dark:border-white/10 shadow-md hover:shadow-lg text-sm font-medium flex items-center gap-3;
+  }
+
+  .calendar-grid-border {
+    @apply border-r border-b border-[#dadce0] dark:border-white/10;
+  }
+}
+
+/* View Transition Recipes */
+@keyframes fade {
+  from { filter: blur(3px); opacity: 0; }
+  to { filter: blur(0); opacity: 1; }
+}
+
+@keyframes slide {
+  from { translate: var(--slide-offset); }
+  to { translate: 0; }
+}
+
+::view-transition-old(.fade-out) {
+  animation: var(--duration-exit) ease-in fade reverse;
+}
+::view-transition-new(.fade-in) {
+  animation: var(--duration-enter) ease-out var(--duration-exit) both fade;
+}
+
+::view-transition-old(.nav-forward) {
+  --slide-offset: -60px;
+  animation:
+    var(--duration-exit) ease-in both fade reverse,
+    var(--duration-move) ease-in-out both slide reverse;
+}
+::view-transition-new(.nav-forward) {
+  --slide-offset: 60px;
+  animation:
+    var(--duration-enter) ease-out var(--duration-exit) both fade,
+    var(--duration-move) ease-in-out both slide;
+}
+
+::view-transition-old(.nav-back) {
+  --slide-offset: 60px;
+  animation:
+    var(--duration-exit) ease-in both fade reverse,
+    var(--duration-move) ease-in-out both slide reverse;
+}
+::view-transition-new(.nav-back) {
+  --slide-offset: -60px;
+  animation:
+    var(--duration-enter) ease-out var(--duration-exit) both fade,
+    var(--duration-move) ease-in-out both slide;
+}
+
+::view-transition-group(.morph) {
+  animation-duration: var(--duration-move);
+}
+
+::view-transition-image-pair(.morph) {
+  animation-name: via-blur;
+}
+
+@keyframes via-blur {
+  30% { filter: blur(3px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}

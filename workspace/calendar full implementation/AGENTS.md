@@ -1,0 +1,172 @@
+# AGENTS.md — Calendar Full Implementation
+
+This workspace contains **two independent calendar implementations** that share no code or build tooling. They are separate projects sitting side-by-side in the same directory. There is no monorepo orchestrator.
+
+---
+
+## Repository Layout
+
+```
+calendar full implementation/
+├── index.html                  # CalSync v1 — self-contained single-file app (vanilla JS + Tailwind CDN)
+├── repo/index.html             # CalSync v0 — earlier single-file version (corrupted, has 900+ empty closing tags at EOF)
+├── package.json                # Legacy full-stack config (Express + Vite). Referenced frontend/ dir does not exist.
+├── backend/                    # Tiny Express API server (Node, CommonJS)
+│   ├── server.js               # REST API: GET/POST/PUT/DELETE /api/events
+│   └── data/events.json        # JSON-file "database"
+└── medical-dashboard/          # "Andromeda" — React 19 + Vite calendar app (the active project)
+    ├── package.json            # Own dependencies and scripts
+    ├── vite.config.js
+    ├── vitest.config.js
+    ├── tailwind.config.js
+    ├── postcss.config.js
+    ├── eslint.config.js
+    ├── src/
+    │   ├── main.jsx            # Entry point (StrictMode)
+    │   ├── App.jsx             # Root component: header, sidebar, CalendarGrid, DebugPanel
+    │   ├── index.css           # Tailwind v4 import + View Transition CSS animations
+    │   ├── store/
+    │   │   └── useCalendarStore.js   # Zustand store (all app state)
+    │   ├── components/
+    │   │   ├── CalendarGrid.jsx      # Month + week views, quick-add modal
+    │   │   ├── MiniCalendar.jsx      # Sidebar mini month grid
+    │   │   ├── DebugPanel.jsx        # Dev debug overlay (state snapshot, logs)
+    │   │   ├── Sidebar.jsx           # Floating nav rail (medical dashboard shell)
+    │   │   ├── ScheduleAndAdmin.jsx  # Doctor/patient cards (medical dashboard shell)
+    │   │   ├── Hero3D.jsx            # Three.js hero component
+    │   │   └── VitalStats.jsx        # Recharts vital stats component
+    │   ├── __tests__/
+    │   │   └── CalendarStore.test.js
+    │   └── test/
+    │       └── setup.js              # jsdom setup, mocks crypto.randomUUID
+    └── public/
+        ├── favicon.svg
+        └── icons.svg
+```
+
+---
+
+## Two Independent Projects
+
+### 1. CalSync (root `index.html`)
+- **Single HTML file** (~1450 lines) — all CSS and JS inline.
+- No build step. Opens directly in a browser.
+- Vanilla JS with a global `state` object. No framework.
+- Uses Tailwind CSS via CDN (`cdn.tailwindcss.com`), Font Awesome, Google Fonts (Outfit).
+- **Persistence**: `localStorage` with keys `calsync_users`, `calsync_events`, `calsync_accounts`, `calsync_active`.
+- Features: month/week/day views, multi-user calendars, event CRUD, free-time finder, login simulation, keyboard shortcuts.
+- **Color scheme**: Dark theme with amber/gold accent (`#E8A838`), CSS custom properties in `:root`.
+
+### 2. Andromeda Medical Dashboard (`medical-dashboard/`)
+- **React 19** (canary) + **Vite 8** + **Tailwind CSS v4** (via `@tailwindcss/postcss`).
+- State management: **Zustand** (`useCalendarStore`).
+- Date handling: **date-fns**.
+- Animations: **Framer Motion** + React **View Transitions** (`startTransition`, `addTransitionType`, `<ViewTransition>`).
+- Icons: **@phosphor-icons/react** and **lucide-react**.
+- 3D: **@react-three/fiber** + **@react-three/drei** + **three**.
+- Charts: **recharts**.
+- Styling utilities: **clsx** + **tailwind-merge**.
+- **Color scheme**: Google Calendar-inspired. Light/dark mode via `.dark` class on `<html>`. Custom colors defined in `tailwind.config.js` under `accent.*` (`red`, `cyan`, `green`, `blue`).
+- View transitions defined in `index.css` with CSS `::view-transition-*` pseudo-elements (forward/back slide, fade, morph).
+
+---
+
+## Commands
+
+### Andromeda (`medical-dashboard/`)
+All commands must be run from inside `medical-dashboard/`.
+
+```bash
+npm install          # Install dependencies
+npm run dev          # Start Vite dev server
+npm run build        # Production build
+npm run lint         # ESLint (flat config)
+npm run test         # Vitest (watch mode)
+npm run preview      # Preview production build
+```
+
+### Legacy Backend (`backend/`)
+The Express server uses **CommonJS** (`require`), not ESM. It reads/writes `backend/data/events.json` synchronously.
+
+```bash
+node backend/server.js    # Starts on port 3000 (or PORT env var)
+```
+
+### Root `package.json`
+The root `package.json` scripts reference a `frontend/` directory that **does not exist**. The `npm run dev` command will fail. This is a legacy artifact — the actual frontend is either `index.html` (standalone) or `medical-dashboard/` (React app).
+
+---
+
+## Architecture & Data Flow (Andromeda)
+
+### State (Zustand)
+All state lives in `src/store/useCalendarStore.js`:
+- `currentDate` — the date being viewed
+- `view` — `'day' | 'week' | 'month' | 'year' | 'schedule'`
+- `events` — array of `{ id, title, date, color, type }`
+- `isSidebarOpen`, `debugMode`, `logs`
+
+Components access state via selectors: `useCalendarStore(s => s.prop)`.
+
+### Navigation Flow
+- `App.jsx` renders header controls (prev/next/today/view switcher) and passes clicks to store actions (`next()`, `prev()`, `today()`, `setView()`).
+- Navigation uses `startTransition` + `addTransitionType('nav-forward'|'nav-back')` for animated View Transitions.
+- `<ViewTransition>` in `App.jsx` wraps `<CalendarGrid />` and uses CSS keyframe animations defined in `index.css`.
+
+### Component Hierarchy
+```
+App
+├── <header> — nav controls, search, dark mode toggle, view dropdown
+├── <aside> — sidebar with MiniCalendar, calendar list
+├── <main>
+│   └── <ViewTransition>
+│       └── CalendarGrid — renders month or week grid, quick-add modal
+└── DebugPanel — floating dev overlay (toggle via bug icon)
+```
+
+### Notable Unused Components
+`Sidebar.jsx`, `ScheduleAndAdmin.jsx`, `Hero3D.jsx`, and `VitalStats.jsx` exist in `components/` but are **not imported** by `App.jsx`. These appear to be from a medical dashboard template that the project was scaffolded from.
+
+---
+
+## Testing
+
+- **Framework**: Vitest + @testing-library/react + jsdom
+- **Config**: `vitest.config.js` — environment `jsdom`, globals enabled, setup file `src/test/setup.js`
+- **Setup**: Mocks `crypto.randomUUID` to return `'test-uuid'`
+- **Test file**: `src/__tests__/CalendarStore.test.js` — tests Zustand store directly (not React components)
+- Tests use `useCalendarStore.getState()` to access store without rendering.
+- Zustand store is **not automatically reset** between tests (noted in code comments). If you add tests that mutate state, manually reset relevant fields in `beforeEach`.
+
+---
+
+## Gotchas & Non-Obvious Patterns
+
+1. **Root `package.json` is broken** — references `frontend/` dir that doesn't exist. Don't try to use root-level `npm run dev`.
+
+2. **`repo/index.html` is corrupted** — the file has ~900 empty `</script>` tags appended after line 1013. This is a broken earlier version of CalSync.
+
+3. **Tailwind v4** in the medical-dashboard — uses `@import "tailwindcss"` in CSS (not the old `@tailwind` directives). PostCSS uses `@tailwindcss/postcss` plugin, not the old `tailwindcss` CLI.
+
+4. **Dark mode** toggled by adding/removing `.dark` class on `<html>` (class strategy in `tailwind.config.js`).
+
+5. **View Transitions** use experimental React 19 APIs (`ViewTransition`, `addTransitionType`). These are wrapped in try/catch for safety. The corresponding CSS animations are in `index.css` using `::view-transition-old/new/group/image-pair()` pseudo-elements.
+
+6. **Two different color palettes** across the two CalSync versions:
+   - `index.html` (v1): amber/gold accent `#E8A838`, localStorage keys prefixed `calsync_`
+   - `repo/index.html` (v0): purple accent `#c084fc`, localStorage keys prefixed `cal_`
+
+7. **Backend uses CommonJS** (`require`/`module.exports`) while the React app uses ESM (`import`/`export`).
+
+8. **Event IDs** generated differently:
+   - CalSync v1: `uid()` → `'id_' + Date.now() + '_' + Math.random().toString(36).slice(2,8)`
+   - Andromeda: `crypto.randomUUID()`
+   - Backend: `Date.now().toString()`
+
+9. **Day/Year/Schedule views** in Andromeda are **not fully implemented** — `CalendarGrid.jsx` shows a placeholder for day view ("Day View Implementation...") and has no year or schedule view rendering.
+
+10. **Keyboard shortcuts** in CalSync v1 (`index.html`): T=today, M=month, W=week, D=day, N=new event, arrows=navigate, Esc=close modals. Only active when not focused on form inputs.
+
+11. **No git repository** — this directory is not initialized as a git repo. There's a `.claude/` directory with Claude Code config (settings.json, plugin/SDK packages).
+
+12. **Missing `node_modules`** — neither the root nor `medical-dashboard/` may have `node_modules` installed. Run `npm install` in `medical-dashboard/` before working.
