@@ -12,9 +12,9 @@ import {
   startOfWeek
 } from 'date-fns';
 
-const useCalendarStore = create((set, get) => ({
+const initialState = {
   currentDate: new Date(),
-  view: 'month', // 'day' | 'week' | 'month' | 'year' | 'schedule'
+  view: 'dashboard', // 'dashboard' | 'day' | 'week' | 'month' | 'year' | 'schedule'
   events: [
     {
       id: '1',
@@ -27,8 +27,13 @@ const useCalendarStore = create((set, get) => ({
   isSidebarOpen: true,
   debugMode: false,
   logs: [],
+};
+
+const useCalendarStore = create((set, get) => ({
+  ...initialState,
 
   // Actions
+  reset: () => set(initialState),
   setCurrentDate: (date) => set({ currentDate: date }),
   
   today: () => set({ currentDate: new Date() }),

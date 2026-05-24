@@ -3,14 +3,16 @@ import useCalendarStore from '../store/useCalendarStore';
 
 describe('CalendarStore', () => {
   beforeEach(() => {
-    useCalendarStore.getState().clearLogs();
-    // Reset state if needed (Zustand doesn't auto-reset in tests)
+    useCalendarStore.getState().reset();
+    useCalendarStore.setState({ events: [], logs: [] }); // Start with clean slate for tests
   });
 
-  it('should initialize with current date and month view', () => {
+  it('should initialize with current date and dashboard view', () => {
+    useCalendarStore.getState().reset(); // Test initial state specifically
     const state = useCalendarStore.getState();
-    expect(state.view).toBe('month');
+    expect(state.view).toBe('dashboard');
     expect(state.currentDate).toBeInstanceOf(Date);
+    expect(state.events).toHaveLength(1); // Default initial event
   });
 
   it('should update view mode', () => {
@@ -35,7 +37,8 @@ describe('CalendarStore', () => {
   it('should delete an event', () => {
     const { addEvent, deleteEvent } = useCalendarStore.getState();
     addEvent({ title: 'To Delete' });
-    const eventId = useCalendarStore.getState().events[0].id;
+    const state = useCalendarStore.getState();
+    const eventId = state.events[state.events.length - 1].id;
     
     deleteEvent(eventId);
     

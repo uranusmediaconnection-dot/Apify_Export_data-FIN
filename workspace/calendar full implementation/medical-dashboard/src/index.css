@@ -36,6 +36,18 @@
   .calendar-grid-border {
     @apply border-r border-b border-[#dadce0] dark:border-white/10;
   }
+
+  .glass {
+    @apply backdrop-blur-xl border border-white/20 dark:border-white/10;
+  }
+
+  .glass-light {
+    @apply bg-white/70;
+  }
+
+  .glass-dark {
+    @apply bg-[#3c4043]/50;
+  }
 }
 
 /* View Transition Recipes */

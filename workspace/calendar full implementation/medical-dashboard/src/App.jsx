@@ -112,7 +112,7 @@ const App = () => {
                 <CaretDown size={12} weight="bold" />
               </div>
               <div className="absolute right-0 top-full mt-1 bg-white dark:bg-[#3c4043] shadow-xl border border-gray-100 dark:border-white/10 rounded-md py-2 w-48 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all z-[100]">
-                {['day', 'week', 'month', 'year', 'schedule'].map(v => (
+                {['dashboard', 'day', 'week', 'month', 'year', 'schedule'].map(v => (
                   <div 
                     key={v}
                     onClick={() => handleViewChange(v)}

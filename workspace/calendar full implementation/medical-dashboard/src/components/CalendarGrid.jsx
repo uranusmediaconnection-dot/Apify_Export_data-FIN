@@ -14,6 +14,7 @@ import {
 } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
 import useCalendarStore from '../store/useCalendarStore';
+import Dashboard from './Dashboard';
 
 const CalendarGrid = () => {
   const currentDate = useCalendarStore(s => s.currentDate);
@@ -131,11 +132,142 @@ const CalendarGrid = () => {
     </div>
   );
 
+  const renderDayView = () => (
+    <div className="h-full flex flex-col overflow-y-auto custom-scrollbar">
+      <div className="flex border-b border-gray-200 dark:border-white/10 sticky top-0 bg-white dark:bg-[#202124] z-20">
+        <div className="w-16 border-r border-gray-200 dark:border-white/10 shrink-0" />
+        <div className="flex-1 py-4 text-center">
+          <p className="text-[11px] font-bold text-gray-500 uppercase">{format(currentDate, 'EEEE')}</p>
+          <p className={`text-2xl font-medium mt-1 w-12 h-12 flex items-center justify-center rounded-full mx-auto ${isSameDay(currentDate, new Date()) ? 'bg-accent-blue text-white' : ''}`}>
+            {format(currentDate, 'd')}
+          </p>
+        </div>
+      </div>
+
+      <div className="flex relative">
+        <div className="w-16 border-r border-gray-200 dark:border-white/10 shrink-0 flex flex-col">
+          {hours.map(hour => (
+            <div key={hour.toString()} className="h-20 -mt-2 text-[10px] text-gray-400 text-right pr-2">
+              {format(hour, 'h aa')}
+            </div>
+          ))}
+        </div>
+        <div className="flex-1 relative">
+          {hours.map((_, j) => (
+            <div 
+              key={j} 
+              onClick={() => setSelectedDay(currentDate)}
+              className="h-20 border-b border-gray-100 dark:border-white/5 transition-colors hover:bg-gray-50 dark:hover:bg-white/5 cursor-pointer" 
+            />
+          ))}
+          
+          {/* Day Events */}
+          {events.filter(e => isSameDay(new Date(e.date), currentDate)).map(event => (
+            <div 
+              key={event.id}
+              className="absolute left-2 right-2 p-2 rounded bg-accent-blue/90 text-white text-xs font-medium shadow-sm border border-white/20"
+              style={{ 
+                top: `${new Date(event.date).getHours() * 80 + (new Date(event.date).getMinutes() / 60) * 80}px`,
+                height: '60px'
+              }}
+            >
+              <p className="font-bold">{event.title}</p>
+              <p className="opacity-80 text-[10px]">{format(new Date(event.date), 'h:mm aa')}</p>
+            </div>
+          ))}
+
+          {/* Current Time Indicator */}
+          {isSameDay(currentDate, new Date()) && (
+            <div 
+              className="absolute left-0 right-0 h-px bg-accent-red z-10 pointer-events-none"
+              style={{ top: `${new Date().getHours() * 80 + (new Date().getMinutes() / 60) * 80}px` }}
+            >
+              <div className="w-3 h-3 bg-accent-red rounded-full -ml-1.5 -mt-1.5 shadow-sm" />
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderYearView = () => {
+    const months = Array.from({ length: 12 }, (_, i) => new Date(currentDate.getFullYear(), i, 1));
+    return (
+      <div className="h-full overflow-y-auto p-8 custom-scrollbar">
+        <div className="grid grid-cols-4 gap-x-12 gap-y-16">
+          {months.map(month => (
+            <div key={month.toString()} className="space-y-4">
+              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-widest ml-2">{format(month, 'MMMM')}</h3>
+              <div className="grid grid-cols-7 text-[10px]">
+                {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(d => (
+                  <div key={d} className="text-center text-gray-400 font-bold py-1">{d}</div>
+                ))}
+                {(() => {
+                  const start = startOfWeek(startOfMonth(month));
+                  const end = endOfWeek(endOfMonth(month));
+                  const days = eachDayOfInterval({ start, end });
+                  return days.map((day, i) => (
+                    <div 
+                      key={i} 
+                      className={`text-center py-1.5 rounded-full transition-colors ${
+                        isSameDay(day, new Date()) ? 'bg-accent-blue text-white font-bold' :
+                        !isSameMonth(day, month) ? 'text-gray-300' : 'text-gray-700 dark:text-gray-300'
+                      }`}
+                    >
+                      {format(day, 'd')}
+                    </div>
+                  ));
+                })()}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  const renderScheduleView = () => {
+    const sortedEvents = [...events].sort((a, b) => new Date(a.date) - new Date(b.date));
+    return (
+      <div className="h-full overflow-y-auto p-12 custom-scrollbar">
+        <div className="max-w-3xl mx-auto space-y-12">
+          {sortedEvents.length === 0 ? (
+            <div className="text-center py-20 opacity-30 italic">No upcoming events</div>
+          ) : (
+            sortedEvents.map((event, i) => (
+              <div key={event.id} className="flex gap-8 group">
+                <div className="w-24 shrink-0 text-right">
+                  <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{format(new Date(event.date), 'EEE')}</p>
+                  <p className="text-3xl font-black text-gray-900 dark:text-white">{format(new Date(event.date), 'd')}</p>
+                </div>
+                <div className="flex-1 pb-12 border-l-2 border-gray-100 dark:border-white/5 pl-8 relative group-last:border-transparent">
+                  <div className="absolute -left-[9px] top-2 w-4 h-4 rounded-full bg-accent-blue border-4 border-white dark:border-[#202124] group-hover:scale-125 transition-transform" />
+                  <div className="bg-gray-50 dark:bg-white/5 p-6 rounded-2xl border border-transparent hover:border-accent-blue/20 transition-all cursor-pointer">
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="text-lg font-bold">{event.title}</h3>
+                      <span className="text-xs font-medium px-3 py-1 rounded-full bg-accent-blue/10 text-accent-blue">
+                        {format(new Date(event.date), 'h:mm aa')}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-500">Andromeda Medical Dashboard • General Appointment</p>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="h-full">
+      {view === 'dashboard' && <Dashboard />}
       {view === 'month' && renderMonthView()}
       {view === 'week' && renderWeekView()}
-      {view === 'day' && <div className="p-20 text-center italic opacity-30">Day View Implementation...</div>}
+      {view === 'day' && renderDayView()}
+      {view === 'year' && renderYearView()}
+      {view === 'schedule' && renderScheduleView()}
 
       {/* Quick Add Modal */}
       <AnimatePresence>
