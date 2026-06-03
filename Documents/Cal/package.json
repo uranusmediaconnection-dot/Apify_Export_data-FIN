@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "claude:proxy": "node claude-proxy/server.mjs",
     "test:e2e": "playwright test"
   },
   "dependencies": {
