@@ -31,7 +31,7 @@ export function StatsBar({ events }: { events: DisplayEvent[] }) {
         return d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear();
       }).length,
       icon: LayoutGrid,
-      className: "from-amber-500 to-orange-500"
+      className: "from-teal-500 to-cyan-500"
     }
   ];
 

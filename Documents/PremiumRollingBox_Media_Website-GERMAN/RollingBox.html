@@ -931,22 +931,88 @@
         }
 
         /* =========================================
-           FOOTER
+           UTILITY ANIMATIONS
            ========================================= */
-        .footer {
-            border-top: 1px solid var(--border-color);
-            padding: 40px var(--container-padding);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: var(--bg-secondary);
-            transition: background-color var(--transition-speed) ease;
-            flex-wrap: wrap;
-            gap: 20px;
+        .fade-in {
             opacity: 0;
             transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Slide show animations */
+        .slide-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        
+        .slide-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+        
+        @keyframes growLine {
+            to {
+                width: 60%;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        
+        /* Image animation effects for hero image */
+        .hero-visual img {
+            transition: transform 0.7s ease;
+        }
+        
+        .hero-visual:hover img {
+            transform: scale(1.05);
+        }
+        
+        /* Animation classes for slide show */
+        .slide-fade {
             animation: fadeInUp 0.6s ease forwards;
-            animation-delay: 1.2s;
+        }
+        
+        .slide-fade-delay-0.2 {
+            animation-delay: 0.2s;
+        }
+        
+        .slide-fade-delay-0.4 {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .footer-text {
@@ -1276,10 +1342,94 @@
                             <div class="hero-stat-label">Recall Rate</div>
                         </div>
                     </div>
-                </div>
+</div>
             </header>
-
-            <!-- Stats Bar -->
+            
+            <!-- Slide Show -->
+            <section class="slide-show" style="margin-top: 80px;">
+                <div class="slide-fade slide-fade-delay-0.2">
+                    <img src="https://images.unsplash.com/photo-1704073135115-18b4c1d82b6e?ixlib=rb-4.1.0&auto=format&fit=crop&w=1920&q=80" 
+                         alt="Modern Skopje cityscape at sunset with LED billboard truck advertising on urban streets" 
+                         loading="lazy"
+                         width="1920" 
+                         height="1080">
+                    <div class="hero-overlay">
+                        <div class="hero-stat-item">
+                            <div class="hero-stat-num">2.5X</div>
+                            <div class="hero-stat-label">MORE ENGAGEMENT</div>
+                        </div>
+                        <div class="hero-stat-item" style="text-align: right;">
+                            <div class="hero-stat-num">97%</div>
+                            <div class="hero-stat-label">RECALL RATE</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="slide-fade slide-fade-delay-0.4">
+                    <img src="https://images.unsplash.com/photo-1704073135115-18b4c1d82b6e?ixlib=rb-4.1.0&auto=format&fit=crop&w=1920&q=80" 
+                         alt="Modern Skopje cityscape at sunset with LED billboard truck advertising on urban streets" 
+                         loading="lazy"
+                         width="1920" 
+                         height="1080">
+                    <div class="hero-overlay">
+                        <div class="hero-stat-item">
+                            <div class="hero-stat-num">2.5X</div>
+                            <div class="hero-stat-label">MORE ENGAGEMENT</div>
+                        </div>
+                        <div class="hero-stat-item" style="text-align: right;">
+                            <div class="hero-stat-num">97%</div>
+                            <div class="hero-stat-label">RECALL RATE</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="slide-fade slide-fade-delay-0.6">
+                    <img src="https://images.unsplash.com/photo-1704073135115-18b4c1d82b6e?ixlib=rb-4.1.0&auto=format&fit=crop&w=1920&q=80" 
+                         alt="Modern Skopje cityscape at sunset with LED billboard truck advertising on urban streets" 
+                         loading="lazy"
+                         width="1920" 
+                         height="1080">
+                    <div class="hero-overlay">
+                        <div class="hero-stat-item">
+                            <div class="hero-stat-num">2.5X</div>
+                            <div class="hero-stat-label">MORE ENGAGEMENT</div>
+                        </div>
+                        <div class="hero-stat-item" style="text-align: right;">
+                            <div class="hero-stat-num">97%</div>
+                            <div class="hero-stat-label">RECALL RATE</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="slide-fade slide-fade-delay-0.8">
+                    <img src="https://images.unsplash.com/photo-1704073135115-18b4c1d82b6e?ixlib=rb-4.1.0&auto=format&fit=crop&w=1920&q=80" 
+                         alt="Modern Skopje cityscape at sunset with LED billboard truck advertising on urban streets" 
+                         loading="lazy"
+                         width="1920" 
+                         height="1080">
+                    <div class="hero-overlay">
+                        <div class="hero-stat-item">
+                            <div class="hero-stat-num">2.5X</div>
+                            <div class="hero-stat-label">MORE ENGAGEMENT</div>
+                        </div>
+                        <div class="hero-stat-item" style="text-align: right;">
+                            <div class="hero-stat-num">97%</div>
+                            <div class="hero-stat-label">RECALL RATE</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="cta-section fade-in" style="animation-delay: 1.4s;">
+                    <h2 class="cta-title fade-in">Ready to Illuminate?</h2>
+                    <p class="cta-text fade-in">
+                        Elevate your brand presence with the most sophisticated mobile advertising solution available.
+                    </p>
+                    <a href="mailto:info@rollingboxmedia.com" class="btn btn-primary fade-in" aria-label="Email info@rollingboxmedia.com to request a consultation">
+                        Request Consultation
+                        <i class="material-icons" aria-hidden="true">chevron_right</i>
+                    </a>
+                </div>
+            </section>
             <section aria-label="Company statistics" class="stats-bar">
                 <div class="stat-item">
                     <i class="material-icons stat-icon" aria-hidden="true">timer</i>
@@ -1616,6 +1766,58 @@
                     console.log('Page Load Time:', perfData.loadEventEnd - perfData.loadEventStart, 'ms');
                 }
             });
+        }
+        
+        // =========================================
+        // Slide Show Functionality
+        // =========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.slide-show .slide-fade');
+            let currentSlide = 0;
+            const slideInterval = 5000; // 5 seconds per slide
+            
+            // Add 'visible' class to first slide after a delay
+            setTimeout(() => {
+                slides[0].classList.add('visible');
+            }, 1000);
+            
+            // Set up slide show interval
+            const slideIntervalId = setInterval(() => {
+                // Remove 'visible' class from current slide
+                slides[currentSlide]?.classList.remove('visible');
+                
+                // Move to next slide
+                currentSlide = (currentSlide + 1) % slides.length;
+                
+                // Add 'visible' class to next slide after a short delay
+                setTimeout(() => {
+                    slides[currentSlide]?.classList.add('visible');
+                }, 500);
+            }, slideInterval);
+            
+            // Pause on hover
+            const heroVisual = document.querySelector('.hero-visual');
+            if (heroVisual) {
+                heroVisual.addEventListener('mouseenter', () => {
+                    clearInterval(slideIntervalId);
+                });
+                
+                heroVisual.addEventListener('mouseleave', () => {
+                    // Restart the interval when mouse leaves
+                    const slideIntervalId = setInterval(() => {
+                        // Remove 'visible' class from current slide
+                        slides[currentSlide]?.classList.remove('visible');
+                        
+                        // Move to next slide
+                        currentSlide = (currentSlide + 1) % slides.length;
+                        
+                        // Add 'visible' class to next slide after a short delay
+                        setTimeout(() => {
+                            slides[currentSlide]?.classList.add('visible');
+                        }, 500);
+                    }, slideInterval);
+                }
+            }
         }
     </script>
 

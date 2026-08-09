@@ -99,16 +99,16 @@ export function MiniCalendar({
               onClick={() => onDateSelect(day.dateStr)}
               className={`relative flex h-8 items-center justify-center rounded-lg text-xs font-semibold transition ${
                 isSelected
-                  ? "bg-gradient-to-r from-indigo-500 to-violet-500 text-white shadow-md"
+                  ? "bg-[image:var(--gradient-accent)] text-white shadow-md"
                   : isToday
-                    ? "bg-indigo-500/15 text-indigo-300"
+                    ? "bg-[color:var(--accent)]/15 text-[color:var(--accent)]"
                     : day.other
-                      ? "text-zinc-600 hover:bg-white/5"
+                      ? "text-[color:var(--text-muted)] hover:bg-white/5"
                       : "text-[color:var(--text-secondary)] hover:bg-white/10"
               }`}
             >
               {day.day}
-              {hasEvents && <span className={`absolute bottom-1 h-1 w-1 rounded-full ${isSelected ? "bg-white/90" : "bg-indigo-400"}`} />}
+              {hasEvents && <span className={`absolute bottom-1 h-1 w-1 rounded-full ${isSelected ? "bg-white/90" : "bg-[color:var(--accent)]"}`} />}
             </button>
           );
         })}

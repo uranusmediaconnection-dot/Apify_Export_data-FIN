@@ -119,7 +119,7 @@ export function EventModal({
               type="checkbox"
               checked={formData.allDay}
               onChange={(e) => setFormData((prev) => ({ ...prev, allDay: e.target.checked }))}
-              className="h-4 w-4 accent-indigo-500"
+              className="h-4 w-4 accent-[color:var(--accent)]"
             />
             All-day event
           </label>

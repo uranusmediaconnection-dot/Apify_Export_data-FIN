@@ -1,15 +1,19 @@
 import type { Config } from "tailwindcss";
+import { tailwindTokens } from "./lib/theme";
 
 const config: Config = {
   content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./lib/**/*.{ts,tsx}"],
   theme: {
     extend: {
-      boxShadow: {
-        soft: "0 18px 45px rgba(15, 23, 42, 0.08)"
-      }
-    }
+      colors: tailwindTokens.colors,
+      boxShadow: tailwindTokens.boxShadow,
+      borderRadius: tailwindTokens.borderRadius,
+      fontFamily: {
+        display: ["Georgia", "Times New Roman", "serif"],
+      },
+    },
   },
-  plugins: []
+  plugins: [],
 };
 
 export default config;

@@ -80,7 +80,7 @@ export function Sidebar({
         <div className="space-y-3">
           {upcoming.map((event) => (
             <div key={event.id} className="rounded-xl p-3 transition hover:bg-white/5">
-              <div className="mb-1 flex items-center gap-2 text-xs font-semibold text-indigo-300">
+              <div className="mb-1 flex items-center gap-2 text-xs font-semibold text-[color:var(--accent)]">
                 <Clock size={13} />
                 {fullDate(event.date)}
               </div>

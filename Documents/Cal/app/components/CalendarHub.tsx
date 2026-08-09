@@ -272,7 +272,7 @@ export function CalendarHub() {
                   onClick={() => setCurrentView(view)}
                   className={`rounded-full px-4 py-2 text-sm font-semibold capitalize transition ${
                     currentView === view
-                      ? "bg-[color:var(--bg-elevated)] text-indigo-300 shadow-[var(--shadow-sm)]"
+                      ? "bg-[color:var(--bg-elevated)] text-[color:var(--accent)] shadow-[var(--shadow-sm)]"
                       : "text-[color:var(--text-muted)] hover:text-[color:var(--text-secondary)]"
                   }`}
                 >
@@ -280,7 +280,7 @@ export function CalendarHub() {
                 </button>
               ))}
             </div>
-            <button onClick={() => addToast("Search can be wired to Supabase filters next")} className="focus-ring rounded-xl bg-[color:var(--bg-tertiary)] p-2.5 text-[color:var(--text-secondary)] transition hover:text-indigo-300">
+            <button onClick={() => addToast("Search can be wired to Supabase filters next")} className="focus-ring rounded-xl bg-[color:var(--bg-tertiary)] p-2.5 text-[color:var(--text-secondary)] transition hover:text-[color:var(--accent)]">
               <Search size={18} />
             </button>
             <button onClick={openNewEvent} className="btn-primary focus-ring rounded-xl p-2.5 text-white lg:hidden">
@@ -311,13 +311,13 @@ export function CalendarHub() {
                 key={cell.dateStr}
                 onClick={() => handleDateSelect(cell.dateStr)}
                 className={`calendar-cell flex min-h-28 flex-col overflow-hidden p-2 text-left transition ${
-                  cell.other ? "bg-[color:var(--bg-primary)] text-zinc-600" : "bg-[color:var(--bg-secondary)]"
+                  cell.other ? "bg-[color:var(--bg-primary)] text-[color:var(--text-muted)]" : "bg-[color:var(--bg-secondary)]"
                 } ${cell.today ? "today-cell" : ""} ${selectedDate === cell.dateStr ? "selected-cell" : ""}`}
               >
                 <span
                   className={`mb-2 flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold ${
-                    cell.today ? "bg-gradient-to-r from-indigo-500 to-violet-500 text-white shadow-md" : "text-[color:var(--text-primary)]"
-                  } ${cell.other ? "text-zinc-600" : ""}`}
+                    cell.today ? "bg-[image:var(--gradient-accent)] text-white shadow-md" : "text-[color:var(--text-primary)]"
+                  } ${cell.other ? "text-[color:var(--text-muted)]" : ""}`}
                 >
                   {cell.day}
                 </span>
@@ -335,7 +335,7 @@ export function CalendarHub() {
             <div className="mt-4 rounded-3xl bg-[color:var(--bg-secondary)] p-5 shadow-[var(--shadow-sm)]">
               <div className="mb-4 flex items-center justify-between">
                 <h3 className="text-lg font-bold text-[color:var(--text-primary)]">{currentView === "day" ? fullDate(selectedDate) : "Selected Agenda"}</h3>
-                <button onClick={openNewEvent} className="focus-ring rounded-xl bg-indigo-500/20 px-3 py-2 text-sm font-semibold text-indigo-300 transition hover:bg-indigo-500/30">
+                <button onClick={openNewEvent} className="focus-ring rounded-xl bg-[color:var(--accent)]/20 px-3 py-2 text-sm font-semibold text-[color:var(--accent)] transition hover:bg-[color:var(--accent)]/30">
                   Add Event
                 </button>
               </div>

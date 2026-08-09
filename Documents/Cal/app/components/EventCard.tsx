@@ -42,9 +42,9 @@ export function EventCard({
       }`}
       style={{ borderLeftColor: bgColor, backgroundColor: `${bgColor}20` }}
     >
-      <div className={`truncate font-semibold text-zinc-100 ${compact ? "text-[10px]" : "text-sm"}`}>{event.title}</div>
+      <div className={`truncate font-semibold text-[color:var(--text-primary)] ${compact ? "text-[10px]" : "text-sm"}`}>{event.title}</div>
       {!compact && (
-        <div className="mt-1 truncate text-xs text-zinc-400">
+        <div className="mt-1 truncate text-xs text-[color:var(--text-muted)]">
           {event.all_day ? "All day" : `${formatTime(event.startTime)} - ${formatTime(event.endTime)}`}
         </div>
       )}
