@@ -1,0 +1,25 @@
+# Sensitive files
+apify access token.txt
+all PAGES_github_token.txt
+
+# IDE folders
+.agent-mem/
+.brainsync/
+.cursor/
+.gemini/
+.kilo/
+.qodo/
+.windsurf/
+.kiro/
+
+# IDE rules files
+.clinerules
+.cursorrules
+.windsurfrules
+CLAUDE.md
+GEMINI.md
+AGENTS.md
+
+# Temporary files
+temp_actor_source/
+opencode TODO report.md
