@@ -2,7 +2,7 @@
 # Updates Actor qXMa8kADnUQdmz18G with pricing $1.00/1000 results
 
 $APIFY_TOKEN = Get-Content "apify access token.txt" | Select-String -Pattern "apify_api_" | ForEach-Object { $_.ToString().Trim() }
-$ACTOR_ID = "qXMa8kADnUQdmz18G"
+$ACTOR_ID = "MkUjLNzyBjISO2mEN"
 $API_BASE = "https://api.apify.com/v2"
 
 Write-Host "=" -NoNewline -ForegroundColor Cyan

@@ -2,6 +2,8 @@
 !workspace/
 !workspace/calendar full implementation
 !workspace/calendar full implementation/**
+!Documents/SEO_Reactor-_-prod/
+!Documents/SEO_Reactor-_-prod/**
 !README.md
 node_modules/
 dist/

@@ -1,6 +1,6 @@
 # Simple Actor Deployment via Apify API
 $APIFY_TOKEN = Get-Content "apify access token.txt" | Select-String -Pattern "apify_api_" | ForEach-Object { $_.ToString().Trim() }
-$ACTOR_ID = "qXMa8kADnUQdmz18G"
+$ACTOR_ID = "MkUjLNzyBjISO2mEN"
 
 Write-Host "Deploying LinkedIn Company Email Scraper to Actor $ACTOR_ID..." -ForegroundColor Cyan
 Write-Host ""

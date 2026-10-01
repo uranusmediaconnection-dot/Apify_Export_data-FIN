@@ -1,7 +1,7 @@
-# LinkedIn Company Email Scraper - Deployment Checklist
+# FDN Google Map Master Scraper - Deployment Checklist
 
-**Actor ID:** `qXMa8kADnUQdmz18G`  
-**Pricing Model:** $1.00 per 1,000 results  
+**Actor Name:** FDN Google Map Master Scraper  
+**Pricing Model:** $2.00 per 1,000 places  
 **Status:** Ready for Manual Deployment
 
 ---
@@ -10,7 +10,7 @@
 
 - [x] Project planning and architecture design
 - [x] Input/output schema definitions
-- [x] Core implementation design (LinkedIn scraper, email finder, verification)
+- [x] Core implementation design (Maps scraper, contact enricher, data processor)
 - [x] Docker configuration (Python 3.11 + Playwright)
 - [x] Dependencies specified (apify, playwright, beautifulsoup4, httpx, dnspython)
 - [x] Actor documentation (README)
@@ -22,72 +22,35 @@
 ## 🔄 IN PROGRESS: Manual Deployment Steps
 
 ### Step 1: Open Actor Console ⏳
-**URL:** https://console.apify.com/actors/qXMa8kADnUQdmz18G/source
-
-**Action:** Log in to Apify Console and open the Actor
+**Action:** Log in to Apify Console and open the Actor (create new Actor if needed)
 
 ---
 
 ### Step 2: Update Source Code ⏳
 
-#### 2.1 Create `src/main.py`
-**Content Location:** `C:\Users\Sitcd3\Desktop\Apify_Workers_Actor\temp_actor_source\main.py`
+Source files are already implemented under `temp_actor_source/`. Upload the following structure to the Actor source editor:
 
-Copy the Python code to Actor's source files:
-
-```python
-import asyncio
-from apify import Actor
-
-async def main():
-    async with Actor:
-        actor_input = await Actor.get_input() or {}
-        Actor.log.info('Actor started')
-        
-        companies = actor_input.get('companies', [])
-        max_employees = actor_input.get('maxEmployees', 100)
-        find_emails = actor_input.get('findEmails', True)
-        
-        if not companies:
-            Actor.log.error('No companies provided')
-            return
-        
-        results_count = 0
-        
-        for idx, company in enumerate(companies, 1):
-            Actor.log.info(f'Processing company {idx}/{len(companies)}: {company}')
-            
-            # Demo implementation - returns 5 sample results per company
-            for i in range(min(5, max_employees)):
-                employee_data = {
-                    'full_name': f'John Doe {i+1}',
-                    'job_title': 'Software Engineer',
-                    'company_name': company,
-                    'company_domain': 'example.com',
-                    'linkedin_url': f'https://linkedin.com/in/johndoe{i+1}',
-                    'email': f'john.doe{i+1}@example.com' if find_emails else None,
-                    'email_status': 'valid' if find_emails else 'not_found',
-                    'email_confidence': 85 if find_emails else 0,
-                    'location': 'San Francisco, CA',
-                    'seniority': 'Mid',
-                    'department': 'Engineering'
-                }
-                
-                await Actor.push_data(employee_data)
-                results_count += 1
-                await Actor.set_status_message(f'Processed {results_count} employees')
-        
-        Actor.log.info(f'Completed! Total results: {results_count}')
-
-if __name__ == '__main__':
-    asyncio.run(main())
 ```
+.actor/
+├── actor.json
+└── input_schema.json
+src/
+├── __init__.py
+├── main.py
+├── maps_scraper.py
+├── contact_enricher.py
+├── data_processor.py
+└── proxy_manager.py
+Dockerfile
+requirements.txt
+README.md
+```
+
+**Note:** The implementation uses a `src/` package layout. The Docker CMD is `python -m src.main`.
 
 ---
 
 ### Step 3: Create Dockerfile ⏳
-
-**Path:** `Dockerfile`
 
 ```dockerfile
 FROM apify/actor-python:3.11
@@ -100,14 +63,12 @@ RUN playwright install-deps chromium
 
 COPY . ./
 
-CMD ["python", "-m", "main"]
+CMD ["python", "-m", "src.main"]
 ```
 
 ---
 
 ### Step 4: Create requirements.txt ⏳
-
-**Path:** `requirements.txt`
 
 ```
 apify>=2.0.0
@@ -121,64 +82,98 @@ dnspython>=2.4.0
 
 ### Step 5: Create Input Schema ⏳
 
-**Path:** `.actor/input_schema.json`
-
 ```json
 {
-  "title": "LinkedIn Company Email Scraper Input",
+  "title": "FDN Google Map Master Scraper Input",
   "type": "object",
   "schemaVersion": 1,
   "properties": {
-    "companies": {
-      "title": "Companies",
+    "queries": {
+      "title": "Search Queries",
       "type": "array",
-      "description": "LinkedIn company URLs or company names to scrape",
+      "description": "Google Maps search queries",
       "editor": "stringList",
-      "placeholderValue": "https://www.linkedin.com/company/example/"
+      "placeholderValue": "restaurants in New York"
     },
-    "maxEmployees": {
-      "title": "Max Employees per Company",
-      "type": "integer",
-      "description": "Maximum number of employees to extract per company",
-      "default": 100,
-      "minimum": 1,
-      "maximum": 2000
-    },
-    "findEmails": {
-      "title": "Find Email Addresses",
-      "type": "boolean",
-      "description": "Attempt to discover and verify email addresses",
-      "default": true
-    },
-    "jobTitles": {
-      "title": "Job Titles (Optional)",
-      "type": "array",
-      "description": "Filter by specific job titles",
-      "editor": "stringList",
-      "placeholderValue": "Software Engineer"
-    },
-    "locations": {
-      "title": "Locations (Optional)",
-      "type": "array",
-      "description": "Filter by geographic locations",
-      "editor": "stringList",
+    "location": {
+      "title": "Location",
+      "type": "string",
+      "description": "Location to search",
       "placeholderValue": "San Francisco, CA"
     },
-    "department": {
-      "title": "Department Filter",
-      "type": "string",
-      "description": "Filter by department",
-      "enum": ["sales", "marketing", "engineering", "operations", "any"],
-      "default": "any"
+    "maxResults": {
+      "title": "Max Results per Query",
+      "type": "integer",
+      "description": "Maximum places to scrape per query (1-300)",
+      "default": 20,
+      "minimum": 1,
+      "maximum": 300
     },
-    "decisionMakersOnly": {
-      "title": "Decision Makers Only",
+    "scrapeDetails": {
+      "title": "Scrape Detail Pages",
       "type": "boolean",
-      "description": "Only return Director-level and above",
+      "description": "Visit each place page for full data",
       "default": false
+    },
+    "scrapeContacts": {
+      "title": "Scrape Contact Info",
+      "type": "boolean",
+      "description": "Extract emails and social media",
+      "default": false
+    },
+    "scrapeReviews": {
+      "title": "Scrape Reviews",
+      "type": "boolean",
+      "description": "Extract review data",
+      "default": false
+    },
+    "maxReviews": {
+      "title": "Max Reviews per Place",
+      "type": "integer",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 1000
+    },
+    "scrapePhotos": {
+      "title": "Scrape Photos",
+      "type": "boolean",
+      "description": "Extract photo URLs",
+      "default": false
+    },
+    "maxPhotos": {
+      "title": "Max Photos per Place",
+      "type": "integer",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 100
+    },
+    "language": {
+      "title": "Language",
+      "type": "string",
+      "default": "en"
+    },
+    "country": {
+      "title": "Country",
+      "type": "string",
+      "default": "us"
+    },
+    "proxyConfiguration": {
+      "title": "Proxy Configuration",
+      "type": "object",
+      "description": "Apify proxy settings (RESIDENTIAL required)"
+    },
+    "placeIds": {
+      "title": "Place IDs",
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "startUrls": {
+      "title": "Start URLs",
+      "type": "array",
+      "items": {"type": "string"}
     }
   },
-  "required": ["companies"]
+  "required": ["queries"]
 }
 ```
 
@@ -186,19 +181,17 @@ dnspython>=2.4.0
 
 ### Step 6: Create Actor Configuration ⏳
 
-**Path:** `.actor/actor.json`
-
 ```json
 {
   "actorSpecification": 1,
-  "name": "linkedin-company-email-scraper",
-  "title": "LinkedIn Company Employees Scraper + Email Finder",
+  "name": "fdn-google-map-master-scraper",
+  "title": "FDN Google Map Master Scraper",
   "version": "1.0.0",
   "buildTag": "latest",
   "dockerfile": "./Dockerfile",
   "readme": "./README.md",
   "input": "./.actor/input_schema.json",
-  "storageDescription": "Dataset containing employee records with email addresses",
+  "storageDescription": "Dataset containing Google Maps place data with optional contact enrichment",
   "defaultRunOptions": {
     "memoryMbytes": 8192,
     "timeoutSecs": 3600
@@ -210,88 +203,37 @@ dnspython>=2.4.0
 
 ### Step 7: Create README.md ⏳
 
-**Path:** `README.md`
-
 ```markdown
-# LinkedIn Company Employees Scraper + Email Finder
+# FDN Google Map Master Scraper
 
-Extract employee data from LinkedIn companies with verified email addresses. Perfect for lead generation, recruitment, and sales outreach.
+Extract comprehensive Google Maps business data including contacts, reviews, photos, and hours. No API key required.
 
 ## Features
-
-- 🔍 Scrape employees from LinkedIn companies
-- 📧 Discover email addresses using pattern matching
-- ✅ Verify emails via SMTP and API services
-- 🎯 Filter by job title, location, department, seniority
-- 📊 Export structured data for CRM integration
-- 💰 Pay per result pricing model
+- 🔍 Search by query and location
+- 📊 Extract 32+ fields per place
+- 📧 Contact enrichment (emails, social media)
+- ⭐ Reviews and ratings
+- 📸 Photo URLs
+- 🕐 Opening hours and popular times
+- 🌍 Multi-language support
+- 💰 Pay per result pricing
 
 ## Pricing
+$2.00 per 1,000 places
 
-**$1.00 per 1,000 results**
+## Input
+- `queries`: Search queries (required)
+- `location`: Location to search
+- `maxResults`: Max places per query (1-300)
+- `scrapeDetails`: Visit detail pages
+- `scrapeContacts`: Extract emails/social
+- `scrapeReviews`: Extract reviews
+- `scrapePhotos`: Extract photos
+- `language`: Language code
+- `country`: Country code
 
-## Input Parameters
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `companies` | Array | ✅ Yes | LinkedIn company URLs or company names |
-| `maxEmployees` | Integer | No | Max employees per company (1-2000, default: 100) |
-| `findEmails` | Boolean | No | Enable email discovery (default: true) |
-| `jobTitles` | Array | No | Filter by specific job titles |
-| `locations` | Array | No | Filter by geographic locations |
-| `department` | String | No | Filter by department (sales, marketing, engineering, operations, any) |
-| `decisionMakersOnly` | Boolean | No | Only return Director-level and above (default: false) |
-
-## Output Fields
-
-Each result contains:
-
-- `full_name` - Full name of employee
-- `job_title` - Current job title
-- `company_name` - Company name
-- `company_domain` - Company website domain
-- `linkedin_url` - LinkedIn profile URL
-- `email` - Discovered/verified email address
-- `email_status` - Email verification status (valid, invalid, not_found, unverified)
-- `email_confidence` - Confidence score (0-100)
-- `location` - Geographic location
-- `seniority` - Seniority level (Entry, Mid, Senior, Director, VP, C-Level)
-- `department` - Department/function
-
-## Example Input
-
-```json
-{
-  "companies": [
-    "https://www.linkedin.com/company/apify/",
-    "Microsoft"
-  ],
-  "maxEmployees": 50,
-  "findEmails": true,
-  "jobTitles": ["Software Engineer", "DevOps Engineer"],
-  "department": "engineering",
-  "decisionMakersOnly": false
-}
-```
-
-## Use Cases
-
-- **Lead Generation**: Find decision-makers for B2B sales
-- **Recruitment**: Source candidates with specific skills
-- **Market Research**: Analyze company structures and teams
-- **CRM Enrichment**: Add employee data to existing records
-- **Competitive Intelligence**: Track competitor hiring patterns
-
-## Rate Limits & Best Practices
-
-- Respect LinkedIn's Terms of Service
-- Use appropriate delays between requests
-- Verify emails responsibly
-- Store data securely and comply with GDPR/privacy laws
-
-## Support
-
-For questions or issues, please contact support or visit the Apify Community Forum.
+## Output
+32+ fields including place_id, name, address, phone, website, emails, rating, reviews_count, opening_hours, and more.
 ```
 
 ---
@@ -313,40 +255,48 @@ For questions or issues, please contact support or visit the Apify Community For
 
 ```json
 {
-  "companies": ["Microsoft", "Google"],
-  "maxEmployees": 5,
-  "findEmails": true
+  "queries": ["coffee shops in San Francisco", "restaurants in New York"],
+  "maxResults": 10,
+  "scrapeContacts": true
 }
 ```
 
 **Expected Output:**
-- 5 employee records per company (10 total)
-- Each record contains all required fields
-- Email addresses populated if `findEmails: true`
+- Place records with all 32+ fields
+- Contact enrichment data if enabled
+- Proper parse_confidence scores
+
+**Success Criteria:**
+- ✅ Build completes without errors
+- ✅ Test run completes successfully
+- ✅ Output contains expected place data
+- ✅ All fields are populated correctly
 
 ---
 
 ### Step 10: Configure Pricing ⏳
 
-**URL:** https://console.apify.com/actors/qXMa8kADnUQdmz18G/settings
+**URL:** https://console.apify.com/actors/[ACTOR_ID]/settings
 
 1. Go to **Settings** > **Monetization**
 2. Enable **Pay per result** pricing
-3. Set price: **$1.00 per 1,000 results** ($0.001 per result)
-4. Set primary event: `RESULT`
-5. Save configuration
+3. Set primary event: `place-scraped`
+4. Set price: **$0.002** per event ($2.00 per 1,000 places)
+5. Add optional add-on: `place-details-scraped` at $0.003
+6. Set free tier: **100 places free**
+7. Save configuration
 
 **Pricing Details:**
 - **Model:** Pay per result
-- **Primary Event:** Result (each employee record returned)
-- **Price:** $1.00 per 1,000 results
-- **Free tier:** Up to 2,500 results
+- **Primary Event:** place-scraped
+- **Price:** $2.00 per 1,000 places
+- **Free tier:** Up to 100 places
 
 ---
 
 ### Step 11: Upload Actor Logo ⏳
 
-**URL:** https://console.apify.com/actors/qXMa8kADnUQdmz18G/settings
+**URL:** https://console.apify.com/actors/[ACTOR_ID]/settings
 
 1. Go to **Settings** > **Actor image**
 2. Upload logo: `C:\Users\Sitcd3\Desktop\Apify_Workers_Actor\Max_a_Refine_and_Improve_t.png`
@@ -361,12 +311,12 @@ For questions or issues, please contact support or visit the Apify Community For
 
 ### Step 12: Make Actor Public ⏳
 
-**URL:** https://console.apify.com/actors/qXMa8kADnUQdmz18G/settings
+**URL:** https://console.apify.com/actors/[ACTOR_ID]/settings
 
 1. Go to **Settings** > **Publication**
 2. Set visibility: **Public**
 3. Enable **Include in Apify Store**
-4. Add categories: `LEAD_GENERATION`, `BUSINESS`
+4. Add categories: `SCRAPER`, `BUSINESS_DATA`
 5. Save settings
 
 ---
@@ -375,9 +325,9 @@ For questions or issues, please contact support or visit the Apify Community For
 
 1. Go to **Publication** tab
 2. Fill in Store listing details:
-   - **Short description:** "Find employees from LinkedIn companies with verified emails"
-   - **Categories:** Lead Generation, Business
-   - **Tags:** linkedin, email, scraper, leads, b2b, recruitment
+   - **Short description:** "Extract comprehensive Google Maps business data including contacts, reviews, photos, and hours. No API key required."
+   - **Categories:** SCRAPER, BUSINESS_DATA
+   - **Tags:** google-maps, google-places, scraper, leads, business-data, contacts, reviews, local-seo, b2b
 3. Submit for review
 4. Wait for Apify approval (typically 1-3 business days)
 
@@ -397,24 +347,24 @@ For questions or issues, please contact support or visit the Apify Community For
 
 ## 🔗 Quick Links
 
-- **Actor Console:** https://console.apify.com/actors/qXMa8kADnUQdmz18G
-- **Build Logs:** https://console.apify.com/actors/qXMa8kADnUQdmz18G/builds
-- **Test Run:** https://console.apify.com/actors/qXMa8kADnUQdmz18G/console
-- **Settings:** https://console.apify.com/actors/qXMa8kADnUQdmz18G/settings
-- **Apify Store:** https://apify.com/store (after publication)
+- **Actor Console:** https://console.apify.com/actors/[ACTOR_ID]
+- **Source Editor:** https://console.apify.com/actors/[ACTOR_ID]/source
+- **Settings:** https://console.apify.com/actors/[ACTOR_ID]/settings
+- **Test Console:** https://console.apify.com/actors/[ACTOR_ID]/console
+- **Publication:** https://console.apify.com/actors/[ACTOR_ID]/publication
 
 ---
 
 ## 📝 Notes
 
-- This is a **demo/MVP implementation** - returns sample data
-- For production: implement actual LinkedIn scraping with Playwright
-- Add real email verification using SMTP + API services
-- Consider adding anti-blocking measures (proxies, rate limiting)
-- Ensure compliance with LinkedIn Terms of Service
+- Implementation is complete under `temp_actor_source/`
+- Source uses a `src/` package layout; Docker CMD is `python -m src.main`
+- Actor ID will be assigned by Apify upon creation
+- Logo file is ready at: `C:\Users\Sitcd3\Desktop\Apify_Workers_Actor\Max_a_Refine_and_Improve_t.png`
+- Verify Python syntax and live Google Maps selectors before relying on this checklist
 
 ---
 
 **Last Updated:** 2026-09-30  
 **Version:** 1.0.0  
-**Actor ID:** qXMa8kADnUQdmz18G
+**Status:** Ready for Deployment
